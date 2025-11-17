@@ -20,37 +20,37 @@ export default function AccountPage() {
   }, []);
 
   
+  useEffect(() => {
+    if (!session) return;
 
-  if (!session) return null; // or loading screen
+    async function loadRole() {
+      if (!session) return;
+      
+      const role = await getUserRole(session.user.id);
 
-  if(session.user.id){
-    getUserRole(session.user.id).then((role) => {
-      if (role === 'player') {
-        console.log("player detected", {"email": session.user.email, role});
-        router.replace('/authenticated/player/');
-      } else if (role === 'admin') {
-        router.replace('/authenticated//admin/');
-      } else if (role === 'bar') {
-        router.replace('/authenticated/bar/');
-      }
-    });
-  } else {
-
-  }
-
-  async function getUserRole(userId: string) {
-    const { data, error } = await supabase
-      .from("profiles")
-      .select("role")       
-      .eq("id", userId)     
-      .single();        
-
-    if (error) {
-      console.error("Erreur lors de la récupération du rôle :", error);
-      return null;
+      if (role === "player") router.replace("/authenticated/player");
+      else if (role === "admin") router.replace("/authenticated/admin");
+      else if (role === "bar") router.replace("/authenticated/bar");
     }
 
-    return data?.role;
-  }
+    loadRole();
+  }, [session]);
+
+  return null; 
   
+}
+
+async function getUserRole(userId: string) {
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("role")       
+    .eq("id", userId)     
+    .single();        
+
+  if (error) {
+    console.error("Erreur lors de la récupération du rôle :", error);
+    return null;
+  }
+
+  return data?.role;
 }

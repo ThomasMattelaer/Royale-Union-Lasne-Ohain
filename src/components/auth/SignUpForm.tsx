@@ -33,8 +33,7 @@ export default function SignUpForm() {
       .eq("id", data.user.id);
 
     if (updateError) console.error(updateError);
-    else alert("Account created. Check your email for verification!");
-    router.replace('/account')
+    router.replace('/')
   }
 
     setLoading(false)

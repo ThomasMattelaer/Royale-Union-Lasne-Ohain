@@ -1,13 +1,14 @@
-import { StyleSheet, View, Alert, Text, Button } from "react-native";
+import { StyleSheet, View, Text, Button, ScrollView } from "react-native";
 import { supabase } from "../../lib/supabase";
 import { router } from "expo-router";
+import { Session } from "@supabase/supabase-js";
 
-export default function PlayerDashboard() {
+export default function PlayerDashboard(){
 
   return(
-    <View style={styles.container}>
-      <View style={{ flex: 1, justifyContent: "center" }}>
-        <Text>Player Dashboard</Text>
+    <ScrollView style={styles.container}>
+      <View >
+        <Text >Hello @Name of the player 👋</Text>
       </View>
       <View style={styles.verticallySpaced}>
         <Button
@@ -18,7 +19,7 @@ export default function PlayerDashboard() {
           }}
         />
       </View>
-    </View>
+    </ScrollView>
   );
 }
 

@@ -31,7 +31,7 @@ export default function Auth() {
     if (error) {
       Alert.alert(error.message);
     } else {
-      router.replace('/account');
+      router.replace('/');
     }
   }
 
