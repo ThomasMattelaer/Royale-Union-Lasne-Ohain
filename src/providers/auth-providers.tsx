@@ -1,73 +1,74 @@
-import { AuthContext } from '../hooks/useAuth'
-import { supabase } from '../lib/supabase'
-import type { Session } from '@supabase/supabase-js'
-import { PropsWithChildren, useEffect, useState } from 'react'
+import { AuthContext } from "../hooks/useAuth";
+import { supabase } from "../lib/supabase";
+import type { Session } from "@supabase/supabase-js";
+import { PropsWithChildren, useEffect, useState } from "react";
 
 export default function AuthProvider({ children }: PropsWithChildren) {
-  const [session, setSession] = useState<Session | undefined | null>()
-  const [profile, setProfile] = useState<any>()
-  const [isLoading, setIsLoading] = useState<boolean>(true)
+  const [session, setSession] = useState<Session | undefined | null>();
+  const [profile, setProfile] = useState<any>();
+  const [isSessionLoading, setIsSessionLoading] = useState<boolean>(true);
+  const [isProfileLoading, setIsProfileLoading] = useState<boolean>(true);
+  const isLoading = isSessionLoading || isProfileLoading;
 
-  console.log('AuthProvider session:', session)
+  console.log("AuthProvider session:", session);
 
   // Fetch the session once, and subscribe to auth state changes
   useEffect(() => {
     const fetchSession = async () => {
-      setIsLoading(true)
+      setIsSessionLoading(true);
 
       const {
         data: { session },
         error,
-      } = await supabase.auth.getSession()
+      } = await supabase.auth.getSession();
 
       if (error) {
-        console.error('Error fetching session:', error)
+        console.error("Error fetching session:", error);
       }
 
-      setSession(session)
-      setIsLoading(false)
-      console.log('loading set as false1:', isLoading)
-    }
+      setSession(session);
+      setIsSessionLoading(false);
+      console.log("loading set as false1:", isLoading);
+    };
 
-    fetchSession()
+    fetchSession();
 
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
-      console.log('Auth state changed:', { event: _event, session })
-      setSession(session)
-    })
+      console.log("Auth state changed:", { event: _event, session });
+      setSession(session);
+    });
 
     // Cleanup subscription on unmount
     return () => {
-      subscription.unsubscribe()
-    }
-  }, [])
+      subscription.unsubscribe();
+    };
+  }, []);
 
   // Fetch the profile when the session changes
   useEffect(() => {
     const fetchProfile = async () => {
-      setIsLoading(true)
+      setIsProfileLoading(true);
 
       if (session) {
         const { data } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', session.user.id)
-          .single()
+          .from("profiles")
+          .select("*")
+          .eq("id", session.user.id)
+          .single();
 
-        setProfile(data)
+        setProfile(data);
       } else {
-        setProfile(null)
+        setProfile(null);
       }
 
-      setIsLoading(false)
-      console.log('loading set as false2:', isLoading)
+      setIsProfileLoading(false);
+      console.log("loading set as false 2:", isLoading);
+    };
 
-    }
-
-    fetchProfile()
-  }, [session])
+    fetchProfile();
+  }, [session]);
 
   return (
     <AuthContext.Provider
@@ -80,5 +81,5 @@ export default function AuthProvider({ children }: PropsWithChildren) {
     >
       {children}
     </AuthContext.Provider>
-  )
+  );
 }

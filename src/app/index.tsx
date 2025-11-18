@@ -8,37 +8,31 @@ export default function IndexPage() {
   const { isLoggedIn, profile, isLoading } = useAuthContext();
 
   useEffect(() => {
-    console.log("is Loading index:", isLoading);
-    if (isLoading) return;
-    console.log("User logged In :", isLoggedIn);
-
+    console.log('IndexPage useEffect triggered:', { isLoggedIn, profile, isLoading });
+    if (isLoading) return; 
     if (!isLoggedIn) {
+      console.log('Not logged in, redirecting to login');
       router.replace("/(auth)/login");
       return;
     }
-
-    console.log("User profile:", profile);
     if (profile?.role === "player") router.replace("/authenticated/player");
     else if (profile?.role === "admin") router.replace("/authenticated/admin");
     else if (profile?.role === "bar") router.replace("/authenticated/bar");
   }, [isLoggedIn, profile, isLoading]);
 
-    return(
-      <ScrollView style={styles.container}>
-        <View >
-          <Text >Hello @Name of the player 👋</Text>
-        </View>
-        <View style={styles.verticallySpaced}>
-          <Button
-            title="Sign Out"
-            onPress={async () => {
-              await supabase.auth.signOut();
-              router.replace("/login");
-            }}
-          />
-        </View>
-      </ScrollView>
+  if (isLoading) {
+    // Show a loading indicator or blank screen while loading
+    return (
+      <View
+        style={[
+          styles.container,
+          { justifyContent: "center", alignItems: "center", flex: 1 },
+        ]}
+      >
+        <Text>Loading...</Text>
+      </View>
     );
+  }
 }
 const styles = StyleSheet.create({
   container: {
